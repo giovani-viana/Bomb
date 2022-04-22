@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h> // Biblioteca rand, srand
 #include <iomanip>
+#include <ctime>
 
 using namespace std;
 
@@ -18,42 +19,65 @@ struct Campo { //Informações essenciais para o jogo
   
 };
 
-int Bombas(int b){ // Função que gera as bombas
-    int Qb;
-    for (int b= 0; b == Qb; b++) //Gerando número aleátorio 
-        cout << rand() % 10  << "; ";
-        cout << endl;
+struct coordenadas {
+
+int linha, coluna;
+int Qb;
+struct Campo Matriz[0][0];
+
+};
+
+
+
+int Bombas(coordenadas p2){ // Função que gera as bombas
+
+  int bombas;
+
+    srand(time(NULL));//Sorteia um nuemro diferente cada vez que o codigo é executado
+
+    for (int b = 0; b == p2.Qb; b++) //Gerando número aleátorio 
+    {
+        p2.linha = rand() % p2.linha;
+        p2.coluna = rand() % p2.coluna;
+
+        if(p2.Matriz[p2.linha][p2.coluna].Vbomb == 0){
+            p2.Matriz[p2.linha][p2.coluna].Vbomb = 1;
+            bombas++;
+        }
+        else
+            b--;
+    }
 
         return 0;
 }
-
 
 int main()
 {
 
   int i, j; //Contadores
-  int l, c; //Variáveis das linhas e das colunas
+  coordenadas p1; //Variáveis das linhas e das colunas
   int Qb; //Variável que vai definir a quantidade de bombas
   	
-  double Matriz[l][c];
-
   cout << "______Campo Minado______" << endl;
 
   cout << "Escolha o numero de linhas e colunas: " << endl;
-  cin >> l >> c; //leitura da variável do número de linhas e colunas	       
+  cin >> p1.linha >> p1.coluna; //leitura da variável do número de linhas e colunas	       
 
   cout << "Escolha a quantidade de bombas: ";
-  cin >> Qb; //Leitura da qunatidade de bombas
+  cin >> p1.Qb; //Leitura da qunatidade de bombas
 
-  Bombas(Qb);
+  Bombas(p1); //Chama a função
 
-  for (i = 0; i < l; i++) {  // Imprimindo a Matriz
+  for (i = 0; i < p1.linha; i++) {  // Imprimindo a Matriz
   	cout << "|";
-    for (j = 0; j < c; j++){
+    for (j = 0; j < p1.coluna; j++){
       cout << " * ";
     }
     cout << "|" << endl;
   } 
+
+  return 0;
+}
 
 /* 
 
@@ -63,6 +87,3 @@ int main()
  '1' - '8' -> Bombas ao redor
 
  */
-
-  return 0;
-}
