@@ -2,9 +2,8 @@
 #include <stdlib.h> // Biblioteca rand, srand
 #include <iomanip>
 #include <ctime>
+#include <bits/stdc++.h>
 #define facil 8
-#define medio 12
-#define dificil 20
 
 using namespace std;
 
@@ -34,11 +33,11 @@ Campo Matriz[facil][facil];
 
 void Start(){
 
-  for (linha = 0; linha < facil; linha++){
+  for (linha = 0; linha < facil; linha++){ // Percorre cada coordenada da Matriz
     for (coluna = 0; coluna < facil; coluna++){
       Matriz[linha][coluna].Vbomb = 0; // zera a quantidade de bombas na Matriz
-      Matriz[linha][coluna].VerificaAberta = 0; 
-      Matriz[linha][coluna].Vadj = 0;
+      Matriz[linha][coluna].VerificaAberta = 0;// Zera a quantidade de casas abertas 
+      Matriz[linha][coluna].Vadj = 0; //Zera as o numero de bombas adjacentes a celula
     } 
   }
 }
@@ -49,7 +48,7 @@ void Bombas(int Qb){ // Função que gera as bombas
 
     srand(time(NULL));//Sorteia um numero diferente cada vez que o codigo é executado
 
-    while(i != Qb){
+    while(i != Qb){ //gera um numero aleatorio com um tamanho maximo igual ao tamanho da matriz
       linha = rand() % facil;
         coluna = rand() % facil;
 
@@ -61,13 +60,13 @@ void Bombas(int Qb){ // Função que gera as bombas
 }
 
 int Verifica(int linha, int coluna){ // Verifica se uma coordenada é válida 
-    if (linha >= 0  && linha < facil && coluna >= 0 && coluna < facil)  
+    if (linha >= 0  && linha < facil && coluna >= 0 && coluna < facil) //Se a coordenada digitada for maior que zero e menor que o tamanho da matriz, a coordenada é válida
       return 1;
     else
       return 0;
   }
 
-int Vizinhas(int linha, int coluna){
+int Vizinhas(int linha, int coluna){ //Função que conta a quantidade de bombas nas casas vizinhas
 
   int Quantidade = 0;
 
@@ -99,7 +98,7 @@ int Vizinhas(int linha, int coluna){
   return Quantidade;
 }
 
-void ContarBombas(){
+void ContarBombas(){ // Passa por toda matriz alocando em cada celula a quantidade de bombas adjacentes à célula
   for (linha = 0; linha < facil; linha++){
     for (coluna = 0; coluna < facil; coluna++){
       Matriz[linha][coluna].Vadj = Vizinhas(linha, coluna);
@@ -159,7 +158,7 @@ int Jogo(){
             cout << "Digite as coordenadas desejadas" << endl;
             cin >> linha >> coluna;
 
-            l = linha;
+            l = linha; //Por ter usado as mesmas variaveis muitas vezes estavam surgindo alguns erros
             c = coluna;
 
             if(Verifica(linha, coluna) == 0 || Matriz[linha][coluna].VerificaAberta == 1)
@@ -184,19 +183,68 @@ int main()
 {
   int Qb; //Variável que vai definir a quantidade de bombas
 
-  Start();
+  fstream arquivo; //arquivo
+  clock_t start, end;
+  string usuario, linhas;
+  int opcoes;
 
-  cout << "______Campo Minado______" << endl;
-
-  cout << "Escolha a dificuldade: " << endl;      
-
-  cout << "Escolha a quantidade de bombas: ";
-  cin >> Qb; //Leitura da qunatidade de bombas
-
-  Bombas(Qb); //Chama a função bombas, colocando as bombas no Campo 
-  ContarBombas();
-  Jogo();
-
+  do{
+  	cout << "OPCOES:" << endl;
+  	cout << "1: jogar" << endl;
+  	cout << "2: historico de players" << endl;
+  	cout << "3: encerrar jogo" << endl;
+  	cout << "4: limpar tela" << endl;
+  	cin >> opcoes;
+    
+  	switch(opcoes){
+  		case 1:{
+  			cout << "DIGITE O NOME DO PLAYER: " ;
+  			cin >> usuario;
+  			Start();
+  			cout << "______Campo Minado______" << endl;    
+			
+			cout << "Escolha a quantidade de bombas: ";
+			cin >> Qb; //Leitura da qunatidade de bombas
+  			Bombas(Qb); //Chama a função bombas, colocando as bombas no Campo 
+  			ContarBombas();
+  			start = clock();
+    		Jogo();
+			end = clock();
+			double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+			cout << "Tempo de jogo " << fixed << time_taken << setprecision(5);
+			cout << " sec " << endl;
+			
+			arquivo.open("Historico", fstream::in|fstream::out| fstream::app);
+			arquivo << usuario << " " << time_taken << endl;
+			arquivo.close();
+			
+			break;
+		  }
+		case 2:{
+			arquivo.open("Historico", fstream::in);
+			while(getline(arquivo, linhas)){
+				cout << linhas << endl;
+			}
+			arquivo.close();
+			cout << endl;
+			break;
+		}
+		case 3:{
+			cout << "Encerrando..." << endl;
+			break;
+		}
+		case 4:{
+			system("cls");
+			break;
+		}
+		default:{
+			cout << "OPCAO INVALIDA" << endl;
+			break;
+		}
+	  }
+  	
+  }while(opcoes != 3);
+  
   return 0;
 }
 
